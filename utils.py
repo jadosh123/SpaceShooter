@@ -14,7 +14,7 @@ def collision_detection(entity_list, proj_list):
             ent_start_y = entity.rect.y
             ent_end_y = entity.rect.y + entity.rect.height
 
-            # Check for horizontal overlap in bounding boxes x and y        
+            # Check for horizontal overlap in bounding boxes x and y
             if (
                 proj_start_x >= ent_start_x and proj_start_x <= ent_end_x
                 or
