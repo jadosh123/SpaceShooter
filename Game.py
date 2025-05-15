@@ -10,6 +10,50 @@ RES_Y = 240
 PLAYER_SPEED = 2.4
 
 
+def collision_detection(entity_list, proj_list):
+    x_collision = False
+    y_collision = False
+    
+    for entity in entity_list:
+        for projectile in proj_list:
+            # Ranges for each projectile and entity
+            proj_start_x = projectile.rect.x
+            proj_end_x = projectile.rect.x + projectile.rect.width
+            proj_start_y = projectile.rect.y
+            proj_end_y = projectile.rect.y + projectile.rect.height
+            ent_start_x = entity.rect.x
+            ent_end_x = entity.rect.x + entity.rect.width
+            ent_start_y = entity.rect.y
+            ent_end_y = entity.rect.y + entity.rect.height
+            
+            # Check for horizontal overlap in bounding boxes x and y        
+            if (
+                proj_start_x >= ent_start_x and proj_start_x <= ent_end_x
+                or
+                proj_end_x >= ent_start_x and proj_end_x <= ent_end_x
+                or
+                proj_start_x <= ent_start_x and proj_end_x >= ent_end_x
+            ):
+                x_collision = True
+                
+            if (
+                proj_start_y >= ent_start_y and proj_start_y <= ent_end_y
+                or
+                proj_end_y >= ent_start_y and proj_end_y <= ent_end_y
+                or
+                proj_start_y <= ent_start_y and proj_end_y >= ent_end_y
+            ):
+                y_collision = True
+            
+            if x_collision and y_collision:
+                projectile.kill()
+                entity.kill()
+            else:
+                x_collision = False
+                y_collision = False
+            
+
+
 if __name__ == "__main__":
     # pygame setup
     pygame.init()
@@ -29,7 +73,8 @@ if __name__ == "__main__":
 
     # Sprite group to hold sprites
     player = pygame.sprite.Group()
-    projectile_sprites = pygame.sprite.Group()
+    alien_projectiles = pygame.sprite.Group()
+    player_projectiles = pygame.sprite.Group()
     alien_sprites = pygame.sprite.Group()
 
     # Load spaceship sprite
@@ -70,7 +115,7 @@ if __name__ == "__main__":
                 spaceship.update(player_pos.x)
         # Player projectiles
         if keys[pygame.K_j] and current_time - last_player_bullet > 500:
-            projectile_sprites.add(
+            player_projectiles.add(
                 Playerbullet(
                     player_pos.x + (spaceship.rect.width / 2), 
                     player_pos.y
@@ -87,7 +132,7 @@ if __name__ == "__main__":
         if current_time - last_alien_bullet > 500:
             alien_list = alien_sprites.sprites()
             rand_alien = random.choice(alien_list)
-            projectile_sprites.add(
+            alien_projectiles.add(
                 Alienbullet(
                     rand_alien.rect.x + (rand_alien.rect.width / 2),
                     rand_alien.rect.y
@@ -95,14 +140,26 @@ if __name__ == "__main__":
             )
             last_alien_bullet = current_time
 
-        # Constant position update for bullets
-        projectile_sprites.update()
-        for sprite in projectile_sprites:
-            if sprite.rect.y >= RES_Y:
+
+        # Check for collision player on enemy or reverse
+        collision_detection(alien_sprites, player_projectiles)
+        collision_detection(player, alien_projectiles)
+
+        # Check if bullets reached end of bounds
+        alien_projectiles.update()
+        player_projectiles.update()
+        for sprite in alien_projectiles:
+            if sprite.rect.y + sprite.rect.height >= RES_Y:
+                sprite.kill()
+        
+        for sprite in player_projectiles:
+            if sprite.rect.y <= 0:
                 sprite.kill()
             
-        projectile_sprites.draw(game_surface)
+        alien_projectiles.draw(game_surface)
+        player_projectiles.draw(game_surface)
 
+        # Scale game_surface to support lower res on bigger screen
         scaled_surface = pygame.transform.scale(
             game_surface,
             (WINDOW_X, WINDOW_Y)
@@ -118,4 +175,3 @@ if __name__ == "__main__":
         dt = clock.tick(60)
 
     pygame.quit()
-
