@@ -2,14 +2,14 @@
 import pygame
 import random
 from utils import collision_detection
-from sprites.Spaceship import *
-from sprites.Alien import *
+from sprites.Spaceship import SpaceShip, Playerbullet
+from sprites.Alien import Alien, Alienbullet
 WINDOW_X = 1280
 WINDOW_Y = 800
 RES_X = 320
 RES_Y = 240
 PLAYER_SPEED = 2.4
-            
+
 
 if __name__ == "__main__":
     # pygame setup
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     last_player_bullet = 0  # Tracks time since last shot
     last_alien_time = 0  # Tracks time since last pos
     last_alien_bullet = 0  # Tracks time since last shot
-    
+
     player_pos = pygame.Vector2(
         game_surface.get_width() / 2,
         game_surface.get_height() / 1.2
@@ -37,15 +37,15 @@ if __name__ == "__main__":
     # Load spaceship sprite
     spaceship = SpaceShip(player_pos.x, player_pos.y)
     player.add(spaceship)
-    
+
     # Load aliens
     for i in range(5):
         for j in range(3):
-            alien_sprites.add(Alien(15 + i * 50,5 + j * 30))
+            alien_sprites.add(Alien(15 + i * 50, 5 + j * 30))
 
     while running:
         current_time = pygame.time.get_ticks()
-        
+
         # poll for events pygame.QUIT event means
         # the user clicked X to close your window
         for event in pygame.event.get():
@@ -74,18 +74,18 @@ if __name__ == "__main__":
         if keys[pygame.K_j] and current_time - last_player_bullet > 500:
             player_projectiles.add(
                 Playerbullet(
-                    player_pos.x + (spaceship.rect.width / 2), 
+                    player_pos.x + (spaceship.rect.width / 2),
                     player_pos.y
                 )
             )
-            last_player_bullet = current_time  # Update to last created bullet in milliseconds
+            last_player_bullet = current_time
 
         # Alien movement logic
         if current_time - last_alien_time > 1000:
             alien_sprites.update()
             last_alien_time = current_time
-        
-        # Alien firing logic    
+
+        # Alien firing logic
         if current_time - last_alien_bullet > 500:
             alien_list = alien_sprites.sprites()
             rand_alien = random.choice(alien_list)
@@ -97,7 +97,6 @@ if __name__ == "__main__":
             )
             last_alien_bullet = current_time
 
-
         # Check for collision player on enemy or reverse
         collision_detection(alien_sprites, player_projectiles)
         collision_detection(player, alien_projectiles)
@@ -108,11 +107,11 @@ if __name__ == "__main__":
         for sprite in alien_projectiles:
             if sprite.rect.y + sprite.rect.height >= RES_Y:
                 sprite.kill()
-        
+
         for sprite in player_projectiles:
             if sprite.rect.y <= 0:
                 sprite.kill()
-            
+
         alien_projectiles.draw(game_surface)
         player_projectiles.draw(game_surface)
 
@@ -123,7 +122,7 @@ if __name__ == "__main__":
         )
 
         screen.blit(scaled_surface, (0, 0))
-        
+
         # flip() the display to put your work on screen
         pygame.display.flip()
 

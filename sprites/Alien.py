@@ -4,18 +4,17 @@ import pygame
 class Alien(pygame.sprite.Sprite):
     moves = 0
     orig_x = 0
-    
+
     # Constructor
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("sprites/alien.png")
         self.rect = self.image.get_rect()
-        
+
         self.rect.x = x
-        self.orig_x = x # For resetting to initial pos on x axis
+        self.orig_x = x  # For resetting to initial pos on x axis
         self.rect.y = y
-        
-        
+
     def update(self):
         self.rect.x += 25
         self.moves += 1
@@ -30,10 +29,9 @@ class Alienbullet(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("sprites/alienbullet.png")
         self.rect = self.image.get_rect()
-        
+
         self.rect.x = x - (self.rect.width / 2)
         self.rect.y = y + (self.rect.height)
-        
-    
+
     def update(self):
         self.rect.y += 3
