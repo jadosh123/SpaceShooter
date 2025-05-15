@@ -18,8 +18,9 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     running = True
     dt = 0
-    last_bullet_time = 0
-    last_alien_time = 0
+    last_player_bullet = 0  # Tracks time since last shot
+    last_alien_time = 0  # Tracks time since last pos
+    last_alien_bullet = 0  # Tracks time since last shot
     
     player_pos = pygame.Vector2(
         game_surface.get_width() / 2,
@@ -34,6 +35,7 @@ if __name__ == "__main__":
     # Load spaceship sprite
     spaceship = SpaceShip(player_pos.x, player_pos.y)
     player.add(spaceship)
+    
     # Load aliens
     for i in range(5):
         for j in range(3):
@@ -67,18 +69,32 @@ if __name__ == "__main__":
                 player_pos.x += PLAYER_SPEED
                 spaceship.update(player_pos.x)
         # Player projectiles
-        if keys[pygame.K_j] and current_time - last_bullet_time > 500:
+        if keys[pygame.K_j] and current_time - last_player_bullet > 500:
             projectile_sprites.add(
                 Playerbullet(
                     player_pos.x + (spaceship.rect.width / 2), 
                     player_pos.y
                 )
             )
-            last_bullet_time = current_time  # Update to last created bullet in milliseconds
+            last_player_bullet = current_time  # Update to last created bullet in milliseconds
 
+        # Alien movement logic
         if current_time - last_alien_time > 1000:
             alien_sprites.update()
             last_alien_time = current_time
+        
+        # Alien firing logic    
+        if current_time - last_alien_bullet > 500:
+            alien_list = alien_sprites.sprites()
+            rand_alien = random.choice(alien_list)
+            projectile_sprites.add(
+                Alienbullet(
+                    rand_alien.rect.x + (rand_alien.rect.width / 2),
+                    rand_alien.rect.y
+                )
+            )
+            last_alien_bullet = current_time
+
         # Constant position update for bullets
         projectile_sprites.update()
         for sprite in projectile_sprites:
@@ -102,3 +118,4 @@ if __name__ == "__main__":
         dt = clock.tick(60)
 
     pygame.quit()
+

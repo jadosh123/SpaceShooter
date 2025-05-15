@@ -29,5 +29,5 @@ class Playerbullet(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.rect.y -= 1.5
+        self.rect.y -= 3
         
