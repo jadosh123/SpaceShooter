@@ -2,6 +2,8 @@ import pygame
 
 
 class Alien(pygame.sprite.Sprite):
+    moves = 0
+    orig_x = 0
     
     # Constructor
     def __init__(self, x, y):
@@ -10,7 +12,13 @@ class Alien(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         self.rect.x = x
+        self.orig_x = x # For resetting to initial pos on x axis
         self.rect.y = y
         
+        
     def update(self):
-        pass
+        self.rect.x += 25
+        self.moves += 1
+        if self.moves == 3:
+            self.rect.x = self.orig_x
+            self.moves = 0

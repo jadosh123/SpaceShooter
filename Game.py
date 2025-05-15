@@ -1,5 +1,6 @@
 # Example file showing a circle moving on screen
 import pygame
+import random
 from sprites.Spaceship import *
 from sprites.Alien import *
 WINDOW_X = 1280
@@ -17,7 +18,8 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     running = True
     dt = 0
-    plyr_bullet_time = 0
+    last_bullet_time = 0
+    last_alien_time = 0
     
     player_pos = pygame.Vector2(
         game_surface.get_width() / 2,
@@ -25,15 +27,17 @@ if __name__ == "__main__":
     )
 
     # Sprite group to hold sprites
-    all_sprites = pygame.sprite.Group()
+    player = pygame.sprite.Group()
     projectile_sprites = pygame.sprite.Group()
+    alien_sprites = pygame.sprite.Group()
 
     # Load spaceship sprite
     spaceship = SpaceShip(player_pos.x, player_pos.y)
-    all_sprites.add(spaceship)
-    
+    player.add(spaceship)
+    # Load aliens
     for i in range(5):
-        all_sprites.add(Alien(i * 30, 0))
+        for j in range(3):
+            alien_sprites.add(Alien(15 + i * 50,5 + j * 30))
 
     while running:
         current_time = pygame.time.get_ticks()
@@ -48,9 +52,8 @@ if __name__ == "__main__":
         # last frame
         game_surface.fill("black")
 
-        # rect = spaceship.rect
-        # pygame.draw.rect(game_surface, "yellow", rect)
-        all_sprites.draw(game_surface)
+        player.draw(game_surface)
+        alien_sprites.draw(game_surface)
 
         keys = pygame.key.get_pressed()
         # Move player left
@@ -64,15 +67,18 @@ if __name__ == "__main__":
                 player_pos.x += PLAYER_SPEED
                 spaceship.update(player_pos.x)
         # Player projectiles
-        if keys[pygame.K_j] and current_time - plyr_bullet_time > 500:
+        if keys[pygame.K_j] and current_time - last_bullet_time > 500:
             projectile_sprites.add(
                 Playerbullet(
                     player_pos.x + (spaceship.rect.width / 2), 
                     player_pos.y
                 )
             )
-            plyr_bullet_time = current_time  # Update to last created bullet in milliseconds
+            last_bullet_time = current_time  # Update to last created bullet in milliseconds
 
+        if current_time - last_alien_time > 1000:
+            alien_sprites.update()
+            last_alien_time = current_time
         # Constant position update for bullets
         projectile_sprites.update()
         for sprite in projectile_sprites:
