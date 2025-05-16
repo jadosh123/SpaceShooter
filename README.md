@@ -12,8 +12,8 @@ Follow these steps to clone the project and run the game:
 2.  **Install dependencies:**
     First create a virtual environment in root directory with python using:
     ```
-    1. python -m venv <virtual_environment_name>
-    2. source <virtual_environment_name>/bin/activate
+    python -m venv <virtual_environment_name>
+    source <virtual_environment_name>/bin/activate
     ```
 
     Now run the following to install requirements:
