@@ -36,6 +36,28 @@ def collision_detection(entity_list, proj_list):
             if x_collision and y_collision:
                 projectile.kill()
                 entity.kill()
+                return
             else:
                 x_collision = False
                 y_collision = False
+
+
+def mouse_hovering(mouse_pos, sprite):
+    mouse_pos_x = mouse_pos[0]
+    mouse_pos_y = mouse_pos[1]
+
+    start_sprite_x = sprite.rect.x
+    start_sprite_y = sprite.rect.y
+    end_sprite_x = sprite.rect.x + sprite.rect.width
+    end_sprite_y = sprite.rect.y + sprite.rect.height
+
+    if (
+        start_sprite_x <= mouse_pos_x <= end_sprite_x
+        and
+        start_sprite_y <= mouse_pos_y <= end_sprite_y
+    ):
+        sprite.update(True)
+        return True
+    else:
+        sprite.update(False)
+        return False

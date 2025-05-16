@@ -2,12 +2,23 @@
 import pygame
 import random
 import configs as cf
-from utils import collision_detection
+from utils import collision_detection, mouse_hovering
 from sprites.Spaceship import SpaceShip, Playerbullet
 from sprites.Alien import Alien, Alienbullet
 from sprites.Startscreen import Startscreen, StartButton
 
-player_ship_SPEED = 2.4
+
+def init_game_sprites(alien_sprites, player_ship, spaceship):
+    alien_sprites.empty()
+    player_ship.empty()
+
+    # Load aliens
+    for i in range(5):
+        for j in range(3):
+            alien_sprites.add(Alien(15 + i * 50, 5 + j * 30))
+
+    player_ship.add(spaceship)
+    return
 
 
 if __name__ == "__main__":
@@ -24,6 +35,7 @@ if __name__ == "__main__":
     last_alien_time = 0  # Tracks time since last pos
     last_alien_bullet = 0  # Tracks time since last shot
     is_start_screen = True
+    is_reset_game = False
 
     player_ship_pos = pygame.Vector2(
         game_surface.get_width() / 2,
@@ -35,18 +47,25 @@ if __name__ == "__main__":
     alien_projectiles = pygame.sprite.Group()
     player_ship_projectiles = pygame.sprite.Group()
     alien_sprites = pygame.sprite.Group()
+    start_sprites = pygame.sprite.Group()
+
+    start_sprites.add(start_button)
 
     # Load spaceship sprite
     spaceship = SpaceShip(player_ship_pos.x, player_ship_pos.y)
-    player_ship.add(spaceship)
-
-    # Load aliens
-    for i in range(5):
-        for j in range(3):
-            alien_sprites.add(Alien(15 + i * 50, 5 + j * 30))
+    init_game_sprites(alien_sprites, player_ship, spaceship)
 
     while running:
+        # Check to reset game state
+        if is_reset_game:
+            init_game_sprites(alien_sprites, player_ship, spaceship)
+            is_reset_game = False
+            is_start_screen = True
+
         current_time = pygame.time.get_ticks()
+        keys = pygame.key.get_pressed()
+        mouse_click = pygame.mouse.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
 
         # poll for events pygame.QUIT event means
         # the user clicked X to close your window
@@ -56,33 +75,39 @@ if __name__ == "__main__":
 
         # Displays start screen else displays game
         if is_start_screen:
-            btn_width = start_button.scaled.get_width()
-            scaled_btn_x = (cf.WINDOW_X / 2) - (btn_width / 2)
-            btn_height = start_button.scaled.get_height()
-            scaled_btn_y = (cf.WINDOW_Y - btn_height - 100)
+            start_sprites.draw(start_screen.scaled)
             screen.blit(start_screen.scaled, (0, 0))
-            screen.blit(start_button.scaled, (scaled_btn_x, scaled_btn_y))
+            # Temporary for start screen
+            if mouse_hovering(mouse_pos, start_button):
+                if mouse_click[0]:
+                    is_start_screen = False
         else:
+            # Check game state
+            if (not alien_sprites) or (not player_ship):
+                is_reset_game = True
+                continue
+
             # fill the screen with a color to wipe away anything from
             # last frame
             game_surface.fill("black")
-
             player_ship.draw(game_surface)
             alien_sprites.draw(game_surface)
-
-            keys = pygame.key.get_pressed()
             # Move player_ship left
             if keys[pygame.K_a]:
                 if player_ship_pos.x > 10:
-                    player_ship_pos.x -= player_ship_SPEED
+                    player_ship_pos.x -= cf.SHIP_SPEED
                     spaceship.update(player_ship_pos.x)
             # Move player_ship right
             if keys[pygame.K_d]:
                 if player_ship_pos.x < cf.RES_X - 10 - spaceship.rect.width:
-                    player_ship_pos.x += player_ship_SPEED
+                    player_ship_pos.x += cf.SHIP_SPEED
                     spaceship.update(player_ship_pos.x)
             # player_ship projectiles
-            if keys[pygame.K_j] and current_time - last_player_ship_bullet > 500:
+            if (
+                keys[pygame.K_j]
+                and
+                current_time - last_player_ship_bullet > 500
+            ):
                 player_ship_projectiles.add(
                     Playerbullet(
                         player_ship_pos.x + (spaceship.rect.width / 2),
