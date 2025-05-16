@@ -50,4 +50,4 @@ class Playerbullet(pygame.sprite.Sprite):
         self.rect.y = y
 
     def update(self):
-        self.rect.y -= 3
+        self.rect.y -= 10

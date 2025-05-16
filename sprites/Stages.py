@@ -12,4 +12,3 @@ class StageOne():
             self.image,
             (cf.WINDOW_X, cf.WINDOW_Y)
         )
-
