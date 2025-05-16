@@ -1,0 +1,6 @@
+# Global variables
+WINDOW_X = 1280
+WINDOW_Y = 800
+RES_X = 320
+RES_Y = 240
+SHIP_SPEED = 2.4
