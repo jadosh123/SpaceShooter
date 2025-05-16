@@ -56,6 +56,9 @@ if __name__ == "__main__":
     spaceship = SpaceShip(player_ship_pos.x, player_ship_pos.y)
     init_game_sprites(alien_sprites, player_ship, spaceship)
 
+    # Copy stage map
+    scaled_stage_copy = stage_one.scaled.copy()
+
     while running:
         # Check to reset game state
         if is_reset_game:
@@ -70,6 +73,7 @@ if __name__ == "__main__":
 
         # poll for events pygame.QUIT event means
         # the user clicked X to close your window
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -90,7 +94,9 @@ if __name__ == "__main__":
 
             # fill the screen with a color to wipe away anything from
             # last frame
-            # stage_one.fill("black")
+            stage_one.scaled.fill((0, 0, 0))
+            stage_one.scaled.blit(scaled_stage_copy, (0, 0))
+
             player_ship.draw(stage_one.scaled)
             alien_sprites.draw(stage_one.scaled)
             # Move player_ship left
@@ -152,8 +158,7 @@ if __name__ == "__main__":
             alien_projectiles.draw(stage_one.scaled)
             player_ship_projectiles.draw(stage_one.scaled)
 
-            # Scale stage_one to support lower res on bigger screen
-
+            # Display game surface on main screen
             screen.blit(stage_one.scaled, (0, 0))
 
         # flip() the display to put your work on screen
