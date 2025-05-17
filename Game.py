@@ -6,16 +6,25 @@ from utils import collision_detection, mouse_hovering
 from sprites.Spaceship import SpaceShip, Playerbullet
 from sprites.Alien import Alien, Alienbullet
 from sprites.Startscreen import Startscreen, StartButton
+from sprites.Stages import StageOne
 
 
-def init_game_sprites(alien_sprites, player_ship, spaceship):
+def init_game_sprites(
+    alien_sprites,
+    player_ship,
+    spaceship,
+    player_projectiles,
+    alien_projectiles
+):
     alien_sprites.empty()
     player_ship.empty()
+    player_projectiles.empty()
+    alien_projectiles.empty()
 
     # Load aliens
     for i in range(5):
         for j in range(3):
-            alien_sprites.add(Alien(15 + i * 50, 5 + j * 30))
+            alien_sprites.add(Alien(60 + i * 220, 25 + j * 120))
 
     player_ship.add(spaceship)
     return
@@ -25,9 +34,9 @@ if __name__ == "__main__":
     # pygame setup
     pygame.init()
     screen = pygame.display.set_mode((cf.WINDOW_X, cf.WINDOW_Y))
-    game_surface = pygame.Surface((cf.RES_X, cf.RES_Y))
     start_screen = Startscreen()
     start_button = StartButton()
+    stage_one = StageOne()
     clock = pygame.time.Clock()
     running = True
     dt = 0
@@ -38,8 +47,8 @@ if __name__ == "__main__":
     is_reset_game = False
 
     player_ship_pos = pygame.Vector2(
-        game_surface.get_width() / 2,
-        game_surface.get_height() / 1.2
+        stage_one.scaled.get_width() / 2,
+        stage_one.scaled.get_height() / 1.2
     )
 
     # Sprite group to hold sprites
@@ -53,12 +62,27 @@ if __name__ == "__main__":
 
     # Load spaceship sprite
     spaceship = SpaceShip(player_ship_pos.x, player_ship_pos.y)
-    init_game_sprites(alien_sprites, player_ship, spaceship)
+    init_game_sprites(
+        alien_sprites,
+        player_ship,
+        spaceship,
+        player_ship_projectiles,
+        alien_projectiles
+    )
+
+    # Copy stage map
+    scaled_stage_copy = stage_one.scaled.copy()
 
     while running:
         # Check to reset game state
         if is_reset_game:
-            init_game_sprites(alien_sprites, player_ship, spaceship)
+            init_game_sprites(
+                alien_sprites,
+                player_ship,
+                spaceship,
+                player_ship_projectiles,
+                alien_projectiles
+            )
             is_reset_game = False
             is_start_screen = True
 
@@ -69,6 +93,7 @@ if __name__ == "__main__":
 
         # poll for events pygame.QUIT event means
         # the user clicked X to close your window
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -89,9 +114,11 @@ if __name__ == "__main__":
 
             # fill the screen with a color to wipe away anything from
             # last frame
-            game_surface.fill("black")
-            player_ship.draw(game_surface)
-            alien_sprites.draw(game_surface)
+            stage_one.scaled.fill((0, 0, 0))
+            stage_one.scaled.blit(scaled_stage_copy, (0, 0))
+
+            player_ship.draw(stage_one.scaled)
+            alien_sprites.draw(stage_one.scaled)
             # Move player_ship left
             if keys[pygame.K_a]:
                 if player_ship_pos.x > 10:
@@ -99,7 +126,7 @@ if __name__ == "__main__":
                     spaceship.update(player_ship_pos.x)
             # Move player_ship right
             if keys[pygame.K_d]:
-                if player_ship_pos.x < cf.RES_X - 10 - spaceship.rect.width:
+                if player_ship_pos.x < cf.WINDOW_X - 10 - spaceship.rect.width:
                     player_ship_pos.x += cf.SHIP_SPEED
                     spaceship.update(player_ship_pos.x)
             # player_ship projectiles
@@ -141,23 +168,18 @@ if __name__ == "__main__":
             alien_projectiles.update()
             player_ship_projectiles.update()
             for sprite in alien_projectiles:
-                if sprite.rect.y + sprite.rect.height >= cf.RES_Y:
+                if sprite.rect.y + sprite.rect.height >= cf.WINDOW_Y:
                     sprite.kill()
 
             for sprite in player_ship_projectiles:
                 if sprite.rect.y <= 0:
                     sprite.kill()
 
-            alien_projectiles.draw(game_surface)
-            player_ship_projectiles.draw(game_surface)
+            alien_projectiles.draw(stage_one.scaled)
+            player_ship_projectiles.draw(stage_one.scaled)
 
-            # Scale game_surface to support lower res on bigger screen
-            scaled_surface = pygame.transform.scale(
-                game_surface,
-                (cf.WINDOW_X, cf.WINDOW_Y)
-            )
-
-            screen.blit(scaled_surface, (0, 0))
+            # Display game surface on main screen
+            screen.blit(stage_one.scaled, (0, 0))
 
         # flip() the display to put your work on screen
         pygame.display.flip()
