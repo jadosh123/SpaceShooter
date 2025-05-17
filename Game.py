@@ -9,9 +9,17 @@ from sprites.Startscreen import Startscreen, StartButton
 from sprites.Stages import StageOne
 
 
-def init_game_sprites(alien_sprites, player_ship, spaceship):
+def init_game_sprites(
+    alien_sprites,
+    player_ship,
+    spaceship,
+    player_projectiles,
+    alien_projectiles
+):
     alien_sprites.empty()
     player_ship.empty()
+    player_projectiles.empty()
+    alien_projectiles.empty()
 
     # Load aliens
     for i in range(5):
@@ -54,7 +62,13 @@ if __name__ == "__main__":
 
     # Load spaceship sprite
     spaceship = SpaceShip(player_ship_pos.x, player_ship_pos.y)
-    init_game_sprites(alien_sprites, player_ship, spaceship)
+    init_game_sprites(
+        alien_sprites,
+        player_ship,
+        spaceship,
+        player_ship_projectiles,
+        alien_projectiles
+    )
 
     # Copy stage map
     scaled_stage_copy = stage_one.scaled.copy()
@@ -62,7 +76,13 @@ if __name__ == "__main__":
     while running:
         # Check to reset game state
         if is_reset_game:
-            init_game_sprites(alien_sprites, player_ship, spaceship)
+            init_game_sprites(
+                alien_sprites,
+                player_ship,
+                spaceship,
+                player_ship_projectiles,
+                alien_projectiles
+            )
             is_reset_game = False
             is_start_screen = True
 
