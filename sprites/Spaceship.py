@@ -1,5 +1,5 @@
 import pygame
-import configs as cf
+from configs import *
 
 
 class SpaceShip(pygame.sprite.Sprite):
@@ -10,8 +10,8 @@ class SpaceShip(pygame.sprite.Sprite):
         self.orig_image = pygame.image.load(
             "sprites/spaceship.png").convert_alpha()
         self.rect = self.orig_image.get_rect()
-        scale_x = cf.WINDOW_X / cf.RES_X
-        scale_y = cf.WINDOW_Y / cf.RES_Y
+        scale_x = WINDOW_X / RES_X
+        scale_y = WINDOW_Y / RES_Y
         new_width = self.rect.width * scale_x
         new_height = self.rect.height * scale_y
         self.image = pygame.transform.scale(
@@ -36,8 +36,8 @@ class Playerbullet(pygame.sprite.Sprite):
             pygame.image.load("sprites/shipbullet.png").convert_alpha()
         )
         self.rect = self.orig_image.get_rect()
-        scale_x = cf.WINDOW_X / cf.RES_X
-        scale_y = cf.WINDOW_Y / cf.RES_Y
+        scale_x = WINDOW_X / RES_X
+        scale_y = WINDOW_Y / RES_Y
         new_width = self.rect.width * scale_x
         new_height = self.rect.height * scale_y
         self.image = pygame.transform.scale(

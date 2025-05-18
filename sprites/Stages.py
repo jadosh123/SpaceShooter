@@ -1,5 +1,5 @@
 import pygame
-import configs as cf
+from configs import *
 
 
 class StageOne():
@@ -10,5 +10,5 @@ class StageOne():
 
         self.scaled = pygame.transform.scale(
             self.image,
-            (cf.WINDOW_X, cf.WINDOW_Y)
+            (WINDOW_X, WINDOW_Y)
         )

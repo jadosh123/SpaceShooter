@@ -1,7 +1,7 @@
 # Example file showing a circle moving on screen
 import pygame
 import random
-import configs as cf
+from configs import *
 from utils import collision_detection, mouse_hovering
 from sprites.Spaceship import SpaceShip, Playerbullet
 from sprites.Alien import Alien, Alienbullet
@@ -33,7 +33,7 @@ def init_game_sprites(
 if __name__ == "__main__":
     # pygame setup
     pygame.init()
-    screen = pygame.display.set_mode((cf.WINDOW_X, cf.WINDOW_Y))
+    screen = pygame.display.set_mode((WINDOW_X, WINDOW_Y))
     start_screen = Startscreen()
     start_button = StartButton()
     stage_one = StageOne()
@@ -73,6 +73,7 @@ if __name__ == "__main__":
     # Copy stage map
     scaled_stage_copy = stage_one.scaled.copy()
 
+    # Main game loop
     while running:
         # Check to reset game state
         if is_reset_game:
@@ -103,8 +104,7 @@ if __name__ == "__main__":
             start_sprites.draw(start_screen.scaled)
             screen.blit(start_screen.scaled, (0, 0))
             # Temporary for start screen
-            if mouse_hovering(mouse_pos, start_button):
-                if mouse_click[0]:
+            if mouse_hovering(mouse_pos, start_button) and mouse_click[0]:
                     is_start_screen = False
         else:
             # Check game state
@@ -122,12 +122,12 @@ if __name__ == "__main__":
             # Move player_ship left
             if keys[pygame.K_a]:
                 if player_ship_pos.x > 10:
-                    player_ship_pos.x -= cf.SHIP_SPEED
+                    player_ship_pos.x -= SHIP_SPEED
                     spaceship.update(player_ship_pos.x)
             # Move player_ship right
             if keys[pygame.K_d]:
-                if player_ship_pos.x < cf.WINDOW_X - 10 - spaceship.rect.width:
-                    player_ship_pos.x += cf.SHIP_SPEED
+                if player_ship_pos.x < WINDOW_X - 10 - spaceship.rect.width:
+                    player_ship_pos.x += SHIP_SPEED
                     spaceship.update(player_ship_pos.x)
             # player_ship projectiles
             if (
@@ -168,7 +168,7 @@ if __name__ == "__main__":
             alien_projectiles.update()
             player_ship_projectiles.update()
             for sprite in alien_projectiles:
-                if sprite.rect.y + sprite.rect.height >= cf.WINDOW_Y:
+                if sprite.rect.y + sprite.rect.height >= WINDOW_Y:
                     sprite.kill()
 
             for sprite in player_ship_projectiles:

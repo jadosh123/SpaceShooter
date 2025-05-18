@@ -1,5 +1,5 @@
 import pygame
-import configs as cf
+from configs import *
 
 
 class Startscreen(pygame.sprite.Sprite):
@@ -11,7 +11,7 @@ class Startscreen(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.scaled = pygame.transform.scale(
             self.image,
-            (cf.WINDOW_X, cf.WINDOW_Y)
+            (WINDOW_X, WINDOW_Y)
         )
 
 
@@ -39,8 +39,8 @@ class StartButton(pygame.sprite.Sprite):
 
         self.image = self.no_hover  # Manages what surface to show
         self.rect = self.image.get_rect()
-        self.rect.x = (cf.WINDOW_X / 2) - (self.rect.width / 2)
-        self.rect.y = (cf.WINDOW_Y - self.rect.height - 100)
+        self.rect.x = (WINDOW_X / 2) - (self.rect.width / 2)
+        self.rect.y = (WINDOW_Y - self.rect.height - 100)
 
     def update(self, is_hover):
         if is_hover:
