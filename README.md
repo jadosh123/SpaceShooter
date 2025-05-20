@@ -1,4 +1,4 @@
-# Spaceshooter Game
+# Spacewarrior Game
 
 This game is made with the Pygame library in Python, if you don't have python install it first.
 Follow these steps to clone the project and run the game:
